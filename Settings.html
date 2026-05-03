@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Cubeprogress</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html" class="active">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <main>
+        <h1 style="margin-left: 10px;">Settings</h1>
+        <div class="settings-card">
+            <div class="settings-row">
+                <span>Theme</span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span id="theme-label">Dark</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="settings-row">
+                <span>Timer input</span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span id="input-label">Spacebar</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="input-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <script>
+            const toggle = document.getElementById('theme-toggle');
+            const label = document.getElementById('theme-label');
+            const saved = localStorage.getItem('theme') || 'dark';
+            if (saved === 'light') {
+                toggle.checked = true;
+                label.textContent = 'Light';
+            }
+            toggle.addEventListener('change', function() {
+                const theme = this.checked ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                label.textContent = this.checked ? 'Light' : 'Dark';
+            });
+
+            const inputToggle = document.getElementById('input-toggle');
+            const inputLabel = document.getElementById('input-label');
+            if ((localStorage.getItem('inputMethod') || 'spacebar') === 'manual') {
+                inputToggle.checked = true;
+                inputLabel.textContent = 'Type in';
+            }
+            inputToggle.addEventListener('change', function() {
+                const method = this.checked ? 'manual' : 'spacebar';
+                localStorage.setItem('inputMethod', method);
+                inputLabel.textContent = this.checked ? 'Type in' : 'Spacebar';
+            });
+        </script>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+</body>
+</html>

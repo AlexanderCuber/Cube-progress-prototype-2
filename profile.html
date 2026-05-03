@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Cubeprogress</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <main>
+        <div id="profile-header">
+            <h1 id="profile-username"></h1>
+            <p id="profile-meta"></p>
+        </div>
+        <div id="profile-puzzles"></div>
+        <div id="profile-actions">
+            <button id="logout-btn" onclick="logout()">Log out</button>
+        </div>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (!user) { window.location.href = 'login.html'; }
+
+        document.getElementById('profile-username').textContent = user.username;
+
+        const PUZZLE_ORDER = ['2x2', '3x3', '4x4', '5x5', '6x6', '7x7', 'Skewb', 'Pyraminx', 'Megaminx', 'Square-1', 'Clock', '3x3 OH', '3x3 BLD', '4x4 BLD', '5x5 BLD'];
+
+        const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
+
+        // Collect all solves grouped by puzzle
+        const byPuzzle = {};
+        PUZZLE_ORDER.forEach(p => byPuzzle[p] = []);
+
+        let totalSolves = 0;
+        sessions.forEach(s => {
+            const timesMs = s.timesMs || [];
+            const penalties = s.solvePenalties || [];
+            const puzzles = s.solvePuzzles || timesMs.map(() => '3x3');
+            timesMs.forEach((ms, i) => {
+                const puzzle = puzzles[i] || '3x3';
+                if (byPuzzle[puzzle]) byPuzzle[puzzle].push({ ms, penalty: penalties[i] });
+            });
+            totalSolves += timesMs.length;
+        });
+
+        document.getElementById('profile-meta').textContent =
+            `${totalSolves} solve${totalSolves !== 1 ? 's' : ''} across ${sessions.length} session${sessions.length !== 1 ? 's' : ''}`;
+
+        function effectiveMsOf(solve) {
+            if (solve.penalty === 'DNF') return Infinity;
+            if (solve.penalty === '+2') return solve.ms + 2000;
+            return solve.ms;
+        }
+
+        function formatTime(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms / 1000) % 60);
+            const centis = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+            return minutes > 0 ? `${minutes}:${String(seconds).padStart(2, '0')}.${centis}` : `${seconds}.${centis}`;
+        }
+
+        function computeAoN(solves, start, n) {
+            if (start + n > solves.length) return null;
+            const slice = solves.slice(start, start + n).map(effectiveMsOf);
+            const sorted = [...slice].sort((a, b) => a - b);
+            const middle = sorted.slice(1, n - 1);
+            if (middle.some(t => t === Infinity)) return null;
+            return Math.round(middle.reduce((a, b) => a + b, 0) / (n - 2));
+        }
+
+        function bestSingle(solves) {
+            const effs = solves.map(effectiveMsOf).filter(t => t !== Infinity);
+            return effs.length ? formatTime(Math.min(...effs)) : '-';
+        }
+
+        function bestAoN(solves, n) {
+            let best = null;
+            for (let i = 0; i <= solves.length - n; i++) {
+                const v = computeAoN(solves, i, n);
+                if (v !== null && (best === null || v < best)) best = v;
+            }
+            return best !== null ? formatTime(best) : '-';
+        }
+
+        const container = document.getElementById('profile-puzzles');
+        PUZZLE_ORDER.forEach(puzzle => {
+            const solves = byPuzzle[puzzle];
+            const card = document.createElement('div');
+            card.className = 'puzzle-pb-card';
+            card.innerHTML = `
+                <p class="puzzle-pb-heading">${puzzle}</p>
+                <div class="profile-stat-row"><span>Single</span><span>${bestSingle(solves)}</span></div>
+                <div class="profile-stat-row"><span>AO5</span><span>${bestAoN(solves, 5)}</span></div>
+                <div class="profile-stat-row"><span>AO12</span><span>${bestAoN(solves, 12)}</span></div>
+                <div class="profile-stat-row"><span>AO50</span><span>${bestAoN(solves, 50)}</span></div>
+                <div class="profile-stat-row"><span>AO100</span><span>${bestAoN(solves, 100)}</span></div>
+            `;
+            container.appendChild(card);
+        });
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

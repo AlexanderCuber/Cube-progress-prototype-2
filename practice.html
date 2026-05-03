@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice - Cubeprogress</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="author" content="Alexander Haaland">
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html" class="active">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <main>
+        <div id="practice-header">
+            <h1 id="practice-title">Practice Drills</h1>
+            <p id="practice-subtitle">Targeted exercises to sharpen every part of your solve</p>
+        </div>
+        <div class="practice-grid">
+
+            <div class="drill-card" style="--accent: #5bc4f5">
+                <div class="drill-header">
+                    <h2 class="drill-name">Untimed inspection</h2>
+                    <span class="drill-tag">Inspection</span>
+                </div>
+                <p class="drill-desc">Take as long as you need before starting the timer. Plan your full cross and predict as many pairs as you can before touching the cube. This removes the panic of the 15-second window.</p>
+                <p class="drill-how"><strong>How:</strong> Solve normally but ignore the inspection limit. Aim to predict a F2L pair more than you usually do.</p>
+            </div>
+
+            <div class="drill-card" style="--accent: #5bf5a0">
+                <div class="drill-header">
+                    <h2 class="drill-name">Slow solves</h2>
+                    <span class="drill-tag">Lookahead</span>
+                </div>
+                <p class="drill-desc">Solve at half your normal turning speed with zero pauses. Forces you to track the next pair in advance rather than stopping to search.</p>
+                <p class="drill-how"><strong>How:</strong> Turn slowly and smoothly. If a pause is coming, slow down further instead of stopping. No pauses allowed.</p>
+            </div>
+
+            <div class="drill-card" style="--accent: #8D8DFF">
+                <div class="drill-header">
+                    <h2 class="drill-name">2-look F2L</h2>
+                    <span class="drill-tag">Lookahead</span>
+                </div>
+                <p class="drill-desc">Solve two F2L pairs at once — look at two pairs, close your eyes and solve them. This helps to build an intuition of how the pieces move.</p>
+                <p class="drill-how"><strong>How:</strong> Solve cross, choose two F2L pairs, close your eyes and solve them. Then repeat for the two next pairs.</p>
+            </div>
+
+            <div class="drill-card" style="--accent: #f5a05b">
+                <div class="drill-header">
+                    <h2 class="drill-name">Last layer only</h2>
+                    <span class="drill-tag">TPS &amp; LL</span>
+                </div>
+                <p class="drill-desc">Skip F2L — just practice OLL and PLL back-to-back on a pre-built cube. High repetition builds muscle memory and eliminates hesitation on every case.</p>
+                <p class="drill-how"><strong>How:</strong> Build an F2L, then cycle through OLL + PLL repeatedly without re-scrambling. Focus on smooth execution.</p>
+            </div>
+
+            <div class="drill-card" style="--accent: #f55b8d">
+                <div class="drill-header">
+                    <h2 class="drill-name">PLL time attack</h2>
+                    <span class="drill-tag">Speed &amp; PLL</span>
+                </div>
+                <p class="drill-desc">Do all 21 PLLs consecutively as fast as you can. This helps your turn speed and PLL execution.</p>
+                <p class="drill-how"><strong>How:</strong> Pick an order to do the PLLs in. Then execute them all consecutively at your max speed.</p>
+            </div>
+
+            <div class="drill-card" style="--accent: #f5e05b">
+                <div class="drill-header">
+                    <h2 class="drill-name">Color neutrality practice</h2>
+                    <span class="drill-tag">Color neutrality</span>
+                </div>
+                <p class="drill-desc">Practice solving the cross starting on each of the 6 faces from the same scramble. Removes color bias and builds flexible cross recognition for any orientation.</p>
+                <p class="drill-how"><strong>How:</strong> Take one scramble and solve the cross on white, yellow, green, blue, red, and orange. Compare times across all faces.</p>
+            </div>
+
+        </div>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+</body>
+</html>

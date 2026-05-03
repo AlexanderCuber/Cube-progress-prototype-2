@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="author" content="Alexander Haaland">
+    <meta name="description" content="This is the only place you need to improve at cubing. It has all the tools and reouscorses.">
+    <title>Course</title>
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html" class="active">login</a>
+        </nav>
+    </header>
+    <main>
+        <div id="login-card">
+            <h1 class="login-title">Welcome back</h1>
+            <p class="login-subtitle">Sign in to your account</p>
+            <form class="login-form">
+                <div class="login-field">
+                    <label for="email">Email</label>
+                    <input class="login-input" type="email" id="email" name="email" placeholder="cube@gmail.com" required>
+                </div>
+                <div class="login-field">
+                    <label for="pass">Password</label>
+                    <input class="login-input" type="password" id="pass" name="pass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="login-btn">Log in</button>
+            </form>
+            <p class="login-footer">Don't have an account? <a href="sign_up.html">Sign up</a></p>
+        </div>
+    </main>
+    <script>
+        document.querySelector('.login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('pass').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === pass);
+            if (!user) { showAuthError('Incorrect email or password.'); return; }
+            localStorage.setItem('currentUser', JSON.stringify({ email: user.email, username: user.username }));
+            window.location.href = 'index.html';
+        });
+        function showAuthError(msg) {
+            let el = document.getElementById('auth-error');
+            if (!el) {
+                el = document.createElement('p');
+                el.id = 'auth-error';
+                el.className = 'auth-error';
+                document.querySelector('.login-btn').insertAdjacentElement('beforebegin', el);
+            }
+            el.textContent = msg;
+        }
+    </script>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+
+
+    
+</body>
+</html>

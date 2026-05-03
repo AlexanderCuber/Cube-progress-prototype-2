@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan - Cubeprogress</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="author" content="Alexander Haaland">
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html" class="active">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <main>
+        <div id="plan-header">
+            <h1 id="plan-title">Weekly Practice Plan</h1>
+            <p id="plan-subtitle">The optimal schedule to improve as fast as possible</p>
+            <button id="plan-customize-btn" onclick="openPlanEdit()">Customize plan</button>
+        </div>
+        <div id="plan-grid" class="plan-grid"></div>
+        <div class="plan-legend">
+            <span class="legend-item"><span class="legend-dot cat-session"></span>Solves</span>
+            <span class="legend-item"><span class="legend-dot cat-cross"></span>Cross practice</span>
+            <span class="legend-item"><span class="legend-dot cat-slow"></span>Lookahead</span>
+            <span class="legend-item"><span class="legend-dot cat-speed"></span>Turn speed</span>
+            <span class="legend-item"><span class="legend-dot cat-alg"></span>Alg drilling</span>
+            <span class="legend-item"><span class="legend-dot cat-pair"></span>Others</span>
+        </div>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+
+    <div id="plan-edit-modal" class="modal-hidden">
+        <div id="plan-edit-content">
+            <h3>Customize Plan</h3>
+            <div id="plan-edit-tabs"></div>
+            <div id="plan-edit-tasks"></div>
+            <button id="plan-copy-btn" onclick="copyToAllDays()">Copy this day to all days</button>
+            <div id="plan-edit-btns">
+                <button id="plan-reset-btn" onclick="resetPlan()">Reset to default</button>
+                <button id="plan-save-btn" onclick="savePlanEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CATEGORIES = [
+            { id: 'cat-session', label: 'Solves' },
+            { id: 'cat-cross',   label: 'Cross practice' },
+            { id: 'cat-slow',    label: 'Lookahead' },
+            { id: 'cat-speed',   label: 'Turn speed' },
+            { id: 'cat-alg',     label: 'Alg drilling' },
+            { id: 'cat-pair',    label: 'Others' },
+        ];
+
+        const DEFAULT_PLAN = [
+            { day: 'Monday',    dayNum: 1, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross solver', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Turn speed', cat: 'cat-speed' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Tuesday',   dayNum: 2, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross solver', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Turn speed', cat: 'cat-speed' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Wednesday', dayNum: 3, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross +1', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Turn speed', cat: 'cat-speed' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Thursday',  dayNum: 4, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross +1', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Turn speed', cat: 'cat-speed' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Friday',    dayNum: 5, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross +1', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Alg drilling', cat: 'cat-alg' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Saturday',  dayNum: 6, tasks: [
+                { text: 'AO50', cat: 'cat-session' }, { text: 'Cross +1', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Alg drilling', cat: 'cat-alg' },
+                { text: 'Others', cat: 'cat-pair' }]},
+            { day: 'Sunday',    dayNum: 0, tasks: [
+                { text: 'AO100', cat: 'cat-session' }, { text: 'Cross +1', cat: 'cat-cross' },
+                { text: 'Lookahead', cat: 'cat-slow' }, { text: 'Alg drilling', cat: 'cat-alg' },
+                { text: 'Others', cat: 'cat-pair' }]},
+        ];
+
+        function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
+
+        function escHtml(s) {
+            return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function getWeekKey() {
+            const d = new Date();
+            const jan1 = new Date(d.getFullYear(), 0, 1);
+            const week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+            return `plan_${d.getFullYear()}_w${week}`;
+        }
+
+        let plan = JSON.parse(localStorage.getItem('customPlan') || 'null') || deepCopy(DEFAULT_PLAN);
+
+        function renderPlan() {
+            const today = new Date().getDay();
+            document.getElementById('plan-grid').innerHTML = plan.map(dayData =>
+                `<div class="day-card${dayData.dayNum === today ? ' day-today' : ''}" data-day="${dayData.dayNum}">
+                    <div class="day-name">${dayData.day}</div>
+                    <ul class="day-tasks">
+                        ${dayData.tasks.map(task =>
+                            `<li class="day-task ${task.cat}">
+                                <label class="task-label">
+                                    <input type="checkbox" class="task-check">
+                                    <span class="task-checkmark"></span>
+                                    <span class="task-dot"></span>
+                                    <span class="task-text">${escHtml(task.text)}</span>
+                                </label>
+                            </li>`
+                        ).join('')}
+                    </ul>
+                </div>`
+            ).join('');
+
+            const weekKey = getWeekKey();
+            document.querySelectorAll('.task-check').forEach((cb, i) => {
+                const key = `${weekKey}_${i}`;
+                cb.checked = localStorage.getItem(key) === '1';
+                cb.addEventListener('change', () => localStorage.setItem(key, cb.checked ? '1' : '0'));
+            });
+        }
+
+        // === Edit modal ===
+        let editPlan = [];
+        let editTab = 0;
+
+        function openPlanEdit() {
+            editPlan = deepCopy(plan);
+            editTab = 0;
+            renderEditTabs();
+            renderEditTasks();
+            document.getElementById('plan-edit-modal').classList.remove('modal-hidden');
+        }
+
+        function closePlanEdit() {
+            document.getElementById('plan-edit-modal').classList.add('modal-hidden');
+        }
+
+        function renderEditTabs() {
+            document.getElementById('plan-edit-tabs').innerHTML = editPlan.map((d, i) =>
+                `<button class="plan-edit-tab${i === editTab ? ' active' : ''}" onclick="switchEditTab(${i})">${d.day.slice(0,3)}</button>`
+            ).join('');
+        }
+
+        function switchEditTab(i) {
+            collectCurrentTab();
+            editTab = i;
+            renderEditTabs();
+            renderEditTasks();
+        }
+
+        function collectCurrentTab() {
+            const rows = document.querySelectorAll('.plan-edit-row');
+            editPlan[editTab].tasks = Array.from(rows).map(row => ({
+                text: row.querySelector('.plan-task-input').value.trim() || 'Task',
+                cat: row.querySelector('.plan-cat-select').value,
+            }));
+        }
+
+        const CAT_OPTIONS = CATEGORIES.map(c => `<option value="${c.id}">${c.label}</option>`).join('');
+
+        function renderEditTasks() {
+            const tasks = editPlan[editTab].tasks;
+            document.getElementById('plan-edit-tasks').innerHTML =
+                tasks.map((task, i) =>
+                    `<div class="plan-edit-row">
+                        <select class="plan-cat-select" onchange="updateRowDot(this)">${CAT_OPTIONS}</select>
+                        <input type="text" class="plan-task-input" value="${escHtml(task.text)}" placeholder="Task name">
+                        <button class="plan-task-delete" onclick="deleteEditTask(${i})">&#10005;</button>
+                    </div>`
+                ).join('') +
+                `<button class="plan-add-task-btn" onclick="addEditTask()">+ Add task</button>`;
+
+            document.querySelectorAll('.plan-edit-row').forEach((row, i) => {
+                const sel = row.querySelector('.plan-cat-select');
+                sel.value = tasks[i].cat;
+                updateRowDot(sel);
+            });
+        }
+
+        function updateRowDot(select) {
+            select.className = 'plan-cat-select ' + select.value;
+        }
+
+        function addEditTask() {
+            collectCurrentTab();
+            editPlan[editTab].tasks.push({ text: 'New task', cat: 'cat-session' });
+            renderEditTasks();
+        }
+
+        function deleteEditTask(i) {
+            collectCurrentTab();
+            editPlan[editTab].tasks.splice(i, 1);
+            renderEditTasks();
+        }
+
+        function copyToAllDays() {
+            collectCurrentTab();
+            const tasks = editPlan[editTab].tasks.map(t => ({...t}));
+            editPlan.forEach((day, i) => { if (i !== editTab) day.tasks = tasks.map(t => ({...t})); });
+            const btn = document.getElementById('plan-copy-btn');
+            btn.textContent = 'Copied to all days!';
+            setTimeout(() => btn.textContent = 'Copy this day to all days', 1800);
+        }
+
+        function savePlanEdit() {
+            collectCurrentTab();
+            plan = deepCopy(editPlan);
+            localStorage.setItem('customPlan', JSON.stringify(plan));
+            renderPlan();
+            closePlanEdit();
+        }
+
+        function resetPlan() {
+            if (!confirm('Reset to the default plan?')) return;
+            plan = deepCopy(DEFAULT_PLAN);
+            localStorage.removeItem('customPlan');
+            renderPlan();
+            closePlanEdit();
+        }
+
+        document.getElementById('plan-edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) closePlanEdit();
+        });
+        document.addEventListener('keydown', e => { if (e.code === 'Escape') closePlanEdit(); });
+
+        renderPlan();
+    </script>
+</body>
+</html>

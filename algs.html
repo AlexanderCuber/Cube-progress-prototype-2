@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithms - Cubeprogress</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="author" content="Alexander Haaland">
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html">timer</a>
+            <a href="algs.html" class="active">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <main>
+        <div id="alg-header">
+            <h1 id="alg-title">Algorithms</h1>
+            <p id="alg-subtitle">Every algorithm you need to master the cube</p>
+        </div>
+        <div id="alg-tabs">
+            <button class="alg-tab active" data-tab="OLL" onclick="switchTab('OLL')">OLL <span class="tab-count">57</span></button>
+            <button class="alg-tab" data-tab="PLL" onclick="switchTab('PLL')">PLL <span class="tab-count">21</span></button>
+            <button class="alg-tab" data-tab="F2L" onclick="switchTab('F2L')">F2L <span class="tab-count">41</span></button>
+            <button class="alg-tab" data-tab="ZBLS" onclick="switchTab('ZBLS')">ZBLS <span class="tab-count">306</span></button>
+            <button class="alg-tab" data-tab="ZBLL" onclick="switchTab('ZBLL')">ZBLL <span class="tab-count">494</span></button>
+        </div>
+        <p id="alg-section-info"></p>
+        <div id="alg-grid" class="alg-grid"></div>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+    <script>
+        const PATTERNS = [
+            [0,1,0, 1,1,1, 0,1,0], // cross
+            [0,0,0, 1,1,1, 0,0,0], // line h
+            [0,1,0, 0,1,0, 0,1,0], // line v
+            [0,0,0, 0,1,0, 0,0,0], // dot
+            [0,1,0, 1,1,0, 0,0,0], // small L
+            [0,1,0, 0,1,1, 0,0,0], // small J
+            [1,1,0, 0,1,1, 0,0,0], // S
+            [0,0,1, 1,1,0, 0,0,0], // Z
+            [1,1,1, 0,1,0, 0,1,0], // T
+            [0,1,0, 0,1,0, 1,1,1], // T'
+            [0,1,1, 0,1,0, 1,1,0], // W
+            [1,1,0, 0,1,0, 0,1,1], // W'
+            [1,0,1, 0,1,0, 1,0,1], // 4 corners
+            [0,1,0, 1,1,1, 0,0,0], // arrow
+            [0,0,0, 1,1,1, 0,1,0], // arrow'
+            [1,0,0, 0,1,1, 0,0,1], // diag
+        ];
+
+        const ALL_YELLOW = [1,1,1, 1,1,1, 1,1,1];
+
+        const PLL_NAMES = [
+            'Ua perm','Ub perm','Z perm','H perm',
+            'Aa perm','Ab perm','E perm','F perm',
+            'Ga perm','Gb perm','Gc perm','Gd perm',
+            'Ja perm','Jb perm','Na perm','Nb perm',
+            'Ra perm','Rb perm','T perm','V perm','Y perm',
+        ];
+
+        const ALGS = {
+            OLL: {
+                desc: 'Orient all pieces on the last layer — 57 cases.',
+                color: '#f5d020',
+                cases: Array.from({length: 57}, (_, i) => ({
+                    name: `OLL ${i + 1}`,
+                    alg: 'Coming soon',
+                    pattern: PATTERNS[i % PATTERNS.length],
+                })),
+            },
+            PLL: {
+                desc: 'Permute all pieces on the last layer — 21 cases.',
+                color: '#f5d020',
+                cases: PLL_NAMES.map(name => ({
+                    name,
+                    alg: 'Coming soon',
+                    pattern: ALL_YELLOW,
+                })),
+            },
+            F2L: {
+                desc: 'Build the first two layers — 41 cases.',
+                color: '#8D8DFF',
+                cases: Array.from({length: 41}, (_, i) => ({
+                    name: `F2L ${i + 1}`,
+                    alg: 'Coming soon',
+                    pattern: PATTERNS[i % PATTERNS.length],
+                })),
+            },
+            ZBLS: {
+                desc: 'Last slot + last layer edges oriented — 306 cases.',
+                color: '#5bc4f5',
+                cases: Array.from({length: 306}, (_, i) => ({
+                    name: `ZBLS ${i + 1}`,
+                    alg: 'Coming soon',
+                    pattern: PATTERNS[i % PATTERNS.length],
+                })),
+            },
+            ZBLL: {
+                desc: 'Permute last layer with all edges oriented — 494 cases.',
+                color: '#5bf5a0',
+                cases: Array.from({length: 494}, (_, i) => ({
+                    name: `ZBLL ${i + 1}`,
+                    alg: 'Coming soon',
+                    pattern: PATTERNS[i % PATTERNS.length],
+                })),
+            },
+        };
+
+        function renderFace(pattern, color) {
+            return `<div class="cube-face" style="--on:${color}">` +
+                pattern.map(v => `<div class="cube-cell ${v ? 'cell-on' : 'cell-off'}"></div>`).join('') +
+                `</div>`;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.alg-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            const s = ALGS[tab];
+            document.getElementById('alg-section-info').textContent = s.desc;
+            document.getElementById('alg-grid').innerHTML = s.cases.map(c =>
+                `<div class="alg-card">
+                    <div class="alg-name">${c.name}</div>
+                    <div class="alg-notation">${c.alg}</div>
+                </div>`
+            ).join('');
+        }
+
+        switchTab('OLL');
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>body { overflow: hidden; }</style>
+    <meta name="author" content="Alexander Haaland">
+    <meta name="description" content="This is the only place you need to improve at cubing. It has all the tools and reouscorses.">
+    <title>Course</title>
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}());</script>
+    <script src="auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1 class="hh1">Cubeprogress</h1>
+        <nav>
+            <a href="index.html">home</a>
+            <a href="timer.html" class="active">timer</a>
+            <a href="algs.html">algs</a>
+            <a href="practice.html">practice</a>
+            <a href="plan.html">plan</a>
+            <a href="Settings.html">settings</a>
+            <a href="login.html">login</a>
+        </nav>
+    </header>
+    <div id="best-panel">
+        <h3 id="best-heading">Stats</h3>
+        <div class="best-row best-header">
+            <span class="best-label"></span>
+            <span class="best-col-header">Current</span>
+            <span class="best-col-header">Best</span>
+        </div>
+        <div class="best-row"><span class="best-label">Single</span><span id="current-single">-</span><span id="best-single">-</span></div>
+        <div class="best-row"><span class="best-label">AO5</span><span id="current-ao5">-</span><span id="best-ao5">-</span></div>
+        <div class="best-row"><span class="best-label">AO12</span><span id="current-ao12">-</span><span id="best-ao12">-</span></div>
+        <div class="best-row"><span class="best-label">AO50</span><span id="current-ao50">-</span><span id="best-ao50">-</span></div>
+        <div class="best-row"><span class="best-label">AO100</span><span id="current-ao100">-</span><span id="best-ao100">-</span></div>
+    </div>
+    <div id="times-panel">
+        <div id="session-controls">
+            <select id="session-select" onchange="switchSession(parseInt(this.value))"></select>
+            <button id="session-edit-btn" onclick="openSessionsModal()">&#9998;</button>
+        </div>
+        <h3 id="times-heading">Times</h3>
+        <div id="times-mean"></div>
+        <div id="times-header">
+            <span class="th-num"></span>
+            <span class="th-time">time</span>
+            <span class="th-ao5">ao5</span>
+            <span class="th-ao12">ao12</span>
+        </div>
+        <ol id="times-list"></ol>
+    </div>
+    <main>
+    <div id="scramble-box">
+        <div id="puzzle-select-row">
+            <select id="puzzle-select" onchange="setPuzzle(this.value)">
+                <option value="2x2">2x2</option>
+                <option value="3x3">3x3</option>
+                <option value="4x4">4x4</option>
+                <option value="5x5">5x5</option>
+                <option value="6x6">6x6</option>
+                <option value="7x7">7x7</option>
+                <option value="Skewb">Skewb</option>
+                <option value="Pyraminx">Pyraminx</option>
+                <option value="Megaminx">Megaminx</option>
+                <option value="Square-1">Square-1</option>
+                <option value="Clock">Clock</option>
+                <option value="3x3 OH">3x3 OH</option>
+                <option value="3x3 BLD">3x3 BLD</option>
+                <option value="4x4 BLD">4x4 BLD</option>
+                <option value="5x5 BLD">5x5 BLD</option>
+            </select>
+        </div>
+        <div id="scramble-text">Generating...</div>
+        <div id="scramble-btns">
+            <button id="prev-btn" onclick="prevScramble()">&#8592; Prev</button>
+            <button id="next-btn" onclick="nextScramble()">Next &#8594;</button>
+        </div>
+    </div>
+    <h1 align="center" id="timer"><big><b>0:00.00</b></big></h1>
+    <div id="manual-input-box">
+        <input type="text" id="manual-time-input" autocomplete="off">
+    </div>
+    </main>
+    <footer>
+        <p>Author: Alexander Haaland</p>
+        <a href="mailto:alexanderhaal12@gmail.com">alexanderhaal12@gmail.com</a>
+    </footer>
+
+    <div id="sessions-modal" class="modal-hidden">
+        <div id="sessions-modal-content">
+            <h3>Edit Sessions</h3>
+            <div id="sessions-list"></div>
+            <div id="sessions-modal-btns">
+                <button id="session-new-btn" onclick="newSession()">+ New Session</button>
+                <button id="sessions-modal-done" onclick="closeSessionsModal()">Done</button>
+            </div>
+        </div>
+    </div>
+    <div id="solve-modal" class="modal-hidden">
+        <div id="modal-content">
+            <div id="modal-scramble"></div>
+            <div id="modal-time"></div>
+            <div id="modal-btns">
+                <button id="modal-btn-plus2" onclick="applyPenalty('+2')">+2</button>
+                <button id="modal-btn-dnf" onclick="applyPenalty('DNF')">DNF</button>
+                <button id="modal-btn-delete" onclick="deleteSolve()">Delete</button>
+            </div>
+        </div>
+    </div>
+    <script src="timer.js"></script>
+</body>
+</html>
